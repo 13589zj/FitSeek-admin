@@ -10,7 +10,7 @@
       <h2>管理员登录</h2>
       <el-form @submit.prevent="login">
         <el-form-item label="用户名">
-          <el-input v-model="form.username" />
+          <el-input v-model="form.name" />
         </el-form-item>
         <el-form-item label="密码">
           <el-input v-model="form.password" type="password" show-password />
@@ -29,7 +29,7 @@ export default {
   data() {
     return {
       form: {
-        username: '',
+        name: '',
         password: ''
       },
       loading: false,
@@ -43,7 +43,7 @@ export default {
 
       try {
         const res = await import('../services/api').then(api => {
-          return api.default.post('/auth/login', this.form)
+          return api.default.post('/admin/login', this.form)
         })
 
         if (res.data.success) {
@@ -53,7 +53,11 @@ export default {
           this.error = '登录失败，请检查用户名或密码'
         }
       } catch (err) {
-        this.error = '网络错误，请稍后再试'
+        if(err.response.data.message === '密码错误'){
+          this.error = '登录失败，请检查密码'
+        } else{
+          this.error = '网络错误，请稍后再试'
+        }
       } finally {
         this.loading = false
       }
