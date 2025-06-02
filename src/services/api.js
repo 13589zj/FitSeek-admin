@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const apiClient = axios.create({
-  baseURL: 'http://123.206.217.44:3000/api'
+  baseURL: 'https://api.fanovian.cc:3000/api'
 })
 
 export default apiClient
