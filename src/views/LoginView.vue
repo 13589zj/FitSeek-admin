@@ -48,13 +48,18 @@ export default {
 
         if (res.data.success) {
           localStorage.setItem('admin_token', res.data.token)
+          localStorage.setItem('admin_name', this.form.name)
           this.$router.push('/users')
         } else {
           this.error = '登录失败，请检查用户名或密码'
         }
       } catch (err) {
-        if(err.response.data.message === '密码错误'){
+        if(this.form.name === '' || this.form.password === ''){
+          this.error = '用户名和密码不能为空'
+        } else if(err.response && err.response.data.message === '密码错误'){
           this.error = '登录失败，请检查密码'
+        } else if(err.response && err.response.data.message === '管理员账号不存在'){
+          this.error = '登录失败，管理员账号不存在'
         } else{
           this.error = '网络错误，请稍后再试'
         }

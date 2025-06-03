@@ -45,8 +45,16 @@
         <el-card class="user-list-card">
           <h2 style="margin-bottom: 20px;">用户列表</h2>
           <el-table :data="users" border style="width: 100%">
-            <el-table-column prop="username" label="用户名" />
+            <el-table-column prop="user_id" label="用户ID" />
+            <el-table-column prop="name" label="用户名" />
             <el-table-column prop="tel" label="电话号码" />
+            <el-table-column prop="type" label="用户类型" />
+            <el-table-column prop="created_at" label="注册时间" />
+            <el-table-column label="操作" width="100">
+              <template #default="scope">
+                <el-button @click="deleteUser(scope.row)" type="danger">删除</el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </el-card>
 
@@ -66,6 +74,7 @@ import {
   Check,
   Plus
 } from '@element-plus/icons-vue'
+import { ElMessageBox, ElMessage } from 'element-plus'
 
 export default defineComponent({
   components: {
@@ -75,24 +84,47 @@ export default defineComponent({
   },
   data() {
     return {
-      adminName: "系统管理员",
-      users: [
-        { username: '张三', tel: '13800000000' },
-        { username: '李四', tel: '13900000000' }
-      ]
+      adminName: localStorage.getItem('admin_name'),
+      users: []
     }
   },
   mounted() {
+    this.adminName = localStorage.getItem('admin_name')
     this.fetchUsers()
   },
   methods: {
     async fetchUsers() {
       try {
         const api = await import('../services/api')
-        const res = await api.default.get('/admin/users')
-        this.users = res.data
+        const res = await api.default.get('/admin/user/get')
+        this.users = res.data.users
       } catch (err) {
         alert('加载用户失败')
+      }
+    },
+    async deleteUser(user) {
+      try {
+        await ElMessageBox.confirm(
+          `确定要删除用户 ${user.name} 吗？`,
+          '提示',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+        )
+        const api = await import('../services/api')
+        await api.default.post('/admin/user/delete', { user_id: user.user_id })
+        this.fetchUsers() // 重新加载用户列表
+        ElMessage.success('删除成功')
+      } catch (err) {
+        if (err === 'cancel') {
+          ElMessage.info('已取消删除')
+        } else if (err.response && err.response.data.message) {
+          ElMessage.error(err.response.data.message)
+        } else {
+          ElMessage.error('网络错误，请稍后再试')
+        }
       }
     }
   }
