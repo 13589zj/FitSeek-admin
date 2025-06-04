@@ -11,7 +11,7 @@
     <div style="display: flex; flex: 1;">
       <!-- 侧边栏 -->
       <el-menu
-        default-active="/users"
+        default-active="/article-management"
         class="el-menu-vertical"
         
         router
@@ -42,25 +42,24 @@
       <div class="content-container">
         <!-- 用户数量卡片 -->
         <el-card class="stats-card">
-          <h2 style="margin-bottom: 20px;">用户概况</h2>
+          <h2 style="margin-bottom: 20px;">文章总览</h2>
           <!-- <div class="card-content">
             <span class="card-title">用户数量</span>
             <span class="card-value">{{ users.length }}</span>
           </div> -->
         </el-card>
 
-        <!-- 用户列表 -->
+        <!-- 公告列表 -->
         <el-card class="user-list-card">
-          <h2 style="margin-bottom: 20px;">用户列表</h2>
-          <el-table :data="users" border style="width: 100%" v-loading="loading">
-            <el-table-column prop="user_id" label="用户ID" />
-            <el-table-column prop="name" label="用户名" />
-            <el-table-column prop="tel" label="电话号码" />
-            <el-table-column prop="type" label="用户类型" />
-            <el-table-column prop="created_at" label="注册时间" />
+          <h2 style="margin-bottom: 20px;">文章列表</h2>
+          <el-table :data="articles" border style="width: 100%" v-loading="loading">
+            <el-table-column prop="art_id" label="文章ID" />
+            <el-table-column prop="publisher_name" label="发布者" />
+            <el-table-column prop="content" label="内容" />
+            <el-table-column prop="publish_time" label="发布时间" />
             <el-table-column label="操作" width="100">
               <template #default="scope">
-                <el-button @click="deleteUser(scope.row)" type="danger">删除</el-button>
+                <el-button @click="deleteArticle(scope.row)" type="danger">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -88,29 +87,29 @@ export default defineComponent({
   components: {
     User,
     Notification,
-    Document
+    Document,
   },
   data() {
     return {
       adminName: localStorage.getItem('admin_name'),
-      users: [],
+      articles: [],
       loading: false
     }
   },
   mounted() {
     this.adminName = localStorage.getItem('admin_name')
-    this.fetchUsers()
+    this.fetchArticles()
   },
   methods: {
-    async fetchUsers() {
+    async fetchArticles() {
       this.loading = true
       try {
-        const api = await import('../services/api')
-        const res = await api.default.get('/admin/user/get')
-        if (res.data.success) {
-          this.users = res.data.users
+        const api = await import('../../services/api')
+        const res = await api.default.get('/article/get')
+        if(res.data.success){
+            this.articles = res.data.articles
         } else {
-          throw new Error(res.data.message || '加载用户失败')
+            ElMessage.error('加载文章失败，请稍后再试')
         }
       } catch (err) {
         if (err.response && err.response.data.message) {
@@ -122,10 +121,10 @@ export default defineComponent({
         this.loading = false
       }
     },
-    async deleteUser(user) {
+    async deleteArticle(article) {
       try {
         await ElMessageBox.confirm(
-          `确定要删除用户 ${user.name} 吗？`,
+          `确定要删除文章 ${article.art_id} 吗？`,
           '提示',
           {
             confirmButtonText: '确定',
@@ -133,11 +132,11 @@ export default defineComponent({
             type: 'warning',
           }
         )
-        const api = await import('../services/api')
-        const res = await api.default.post('/admin/user/delete', { user_id: user.user_id })
-        if(res.data.success) {
-          this.fetchUsers() // 重新加载用户列表
-          ElMessage.success('用户删除成功')
+        const api = await import('../../services/api')
+        const res = await api.default.post('/article/delete', { art_id: article.art_id })
+        if (res.data.success) {
+          this.fetchArticles() // 重新加载文章列表
+          ElMessage.success('删除成功')
         } else {
           throw new Error(res.data.message || '删除失败')
         }

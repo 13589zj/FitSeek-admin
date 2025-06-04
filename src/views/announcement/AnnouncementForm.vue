@@ -22,9 +22,17 @@
         </el-menu-item>
         <el-menu-item index="/announcements">
           <el-icon><notification /></el-icon>
-          <span>公告管理</span>
+          <span>公告发布</span>
         </el-menu-item>
         <el-menu-item index="/articles">
+          <el-icon><document /></el-icon>
+          <span>文章发布</span>
+        </el-menu-item>
+        <el-menu-item index="/announcement-management">
+          <el-icon><notification /></el-icon>
+          <span>公告管理</span>
+        </el-menu-item>
+        <el-menu-item index="/article-management">
           <el-icon><document /></el-icon>
           <span>文章管理</span>
         </el-menu-item>
@@ -59,7 +67,7 @@
                 style="width: 100%"
                 placeholder="请选择公告类型"
               >
-                <el-option label="系统公告" value="system" />
+                <el-option label="公告" value="announcement" />
                 <el-option label="活动公告" value="event" />
                 <el-option label="维护公告" value="maintenance" />
               </el-select>
@@ -96,11 +104,12 @@ export default defineComponent({
   },
     data() {
         return {
-            adminName: "系统管理员",
+            adminName: localStorage.getItem('admin_name'),
             form: {
                 content: '',
                 time: new Date(),
-                type: 'system'
+                publisher_name: localStorage.getItem('admin_name'),
+                type: 'announcement'
             }
         }
     },
@@ -109,7 +118,7 @@ export default defineComponent({
             this.form.time = new Date()
             try {
                 const api = await import('../../services/api')
-                const res = await api.default.post('/admin/announcement', this.form)
+                const res = await api.default.post('/announcement/publish', this.form)
                 if (res.data.success) {
                     this.$message.success('公告提交成功')
                     this.resetForm()
@@ -117,7 +126,13 @@ export default defineComponent({
                     this.$message.error('公告提交失败')
                 }
             } catch (err) {
-                this.$message.error('网络错误，请稍后再试')
+                if (this.form.content === '') {
+                    this.$message.error('公告内容不能为空')
+                } else if (err.response && err.response.data.message === '服务器错误') {
+                    this.$message.error('服务器错误，请稍后再试')
+                } else {
+                    this.$message.error('网络错误，请稍后再试')
+                }
             }
         },
         resetForm() {
