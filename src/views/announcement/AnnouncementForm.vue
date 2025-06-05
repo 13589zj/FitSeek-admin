@@ -1,9 +1,14 @@
 <template>
+  <!-- 页面设计，大体上分为三块：顶部导航栏、侧边栏和主要内容区域。 -->
   <div style="display: flex; flex-direction: column; height: 100vh;">
     <!-- 顶部导航栏 -->
+    <!-- 顶部导航栏包含网站logo、管理员信息和登出按钮。 -->
     <div class="header">
       <div class="header-content">
-        <span class="logo">FitSeek</span>
+        <span class="logo">
+          <img :src="logoImg" alt="logo" class="logo-img" />
+          FitSeek
+        </span>
         <div class="admin-info">管理员：{{ adminName }}</div>
         <el-button type="primary" plain @click="logout" style="margin-left: 16px; border: 2px solid #409EFF;">登出</el-button>
       </div>
@@ -12,6 +17,7 @@
     <div style="display: flex; flex: 1;">
       <div class="sidebar-fixed">
       <!-- 侧边栏 -->
+      <!-- 侧边栏包含各个管理功能的链接。 -->
       <el-menu
         default-active="/announcements"
         class="el-menu-vertical"
@@ -50,6 +56,8 @@
       </div>
 
       <!-- 主要内容区域 -->
+      <!-- 主要内容区域包含公告发布表单。 -->
+      <!-- 使用el-card组件来美化表单。 -->
       <div class="content-container">
         <el-card class="form-card">
           <h2 class="card-title">公告发布</h2>
@@ -85,18 +93,21 @@
 </template>
 
 <script>
+// 引入Element Plus的图标组件，并在Vue组件中注册它们。这样可以在侧边栏菜单中使用这些图标。
 import { defineComponent } from 'vue'
 import {
   User,
   Notification,
   Document,
   Food,
-  Basketball,
-  Search,
-  Check,
-  Plus
+  Basketball
 } from '@element-plus/icons-vue'
+// 引入公告发布表单的样式和logo图片。
+import logoImg from '../../logo/logo.png'
 
+// 定义Vue组件，使用defineComponent函数来创建一个新的Vue组件实例。
+// 在组件中注册所需的图标组件，以便在模板中使用。
+// data包括logoImg、管理员名称和表单数据。
 export default defineComponent({
   components: {
     User,
@@ -107,15 +118,17 @@ export default defineComponent({
   },
     data() {
         return {
-            adminName: localStorage.getItem('admin_name'),
-            form: {
-                content: '',
-                time: new Date(),
-                publisher_name: localStorage.getItem('admin_name'),
-                type: 'announcement'
-            }
+          logoImg,
+          adminName: localStorage.getItem('admin_name'),
+          form: {
+              content: '',
+              time: new Date(),
+              publisher_name: localStorage.getItem('admin_name'),
+              type: 'announcement'
+          }
         }
     },
+    // 定义组件的方法，包括提交表单、重置表单和登出功能。
     methods: {
         async submitForm() {
             this.form.time = new Date()
@@ -171,7 +184,14 @@ export default defineComponent({
   margin: 0 auto;
 }
 
+.logo-img {
+  height: 40px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
 .logo {
+  display: flex;
+  align-items: center;
   font-size: 24px;
   font-weight: bold;
   color: #2c3e50;
@@ -240,6 +260,5 @@ export default defineComponent({
   z-index: 999;
   height: calc(100vh - 60px);
   background: #fff;
-  /* 可选：加阴影或边框美化 */
 }
 </style>

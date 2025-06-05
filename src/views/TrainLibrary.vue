@@ -1,9 +1,14 @@
 <template>
+  <!-- 页面设计，大体上分为三块：顶部导航栏、侧边栏和主要内容区域。 -->
   <div style="display: flex; flex-direction: column; height: 200vh;">
     <!-- 顶部导航栏 -->
+    <!-- 顶部导航栏包含网站logo、管理员信息和登出按钮。 -->
     <div class="header">
       <div class="header-content">
-        <span class="logo">FitSeek</span>
+        <span class="logo">
+          <img :src="logoImg" alt="logo" class="logo-img" />
+          FitSeek
+        </span>
         <div class="admin-info">管理员：{{ adminName }}</div>
         <el-button type="primary" plain @click="logout" style="margin-left: 16px; border: 2px solid #409EFF;">登出</el-button>
       </div>
@@ -12,6 +17,7 @@
     <div style="display: flex; flex: 1;">
       <div class="sidebar-fixed">
       <!-- 侧边栏 -->
+      <!-- 侧边栏包含各个管理功能的链接。 -->
       <el-menu
         default-active="/train-library"
         class="el-menu-vertical"
@@ -50,6 +56,8 @@
       </div>
 
       <!-- 主要内容区域 -->
+      <!-- 主要内容区域包含新增训练项目表单和训练项目列表，附带查改删功能。 -->
+      <!-- 使用el-card组件来美化表单。 -->
       <div class="content-container">
         <!-- 新增训练项目卡片 -->
         <el-card class="form-card">
@@ -98,6 +106,8 @@
         </el-card>
 
         <!-- 修改弹窗 -->
+        <!-- 使用el-dialog组件来实现修改训练项目信息的弹窗。 -->
+        <!-- 弹窗中包含一个表单，用户可以修改训练项目的名称、分类和备注。 -->
         <el-dialog title="修改训练项目信息" v-model="editDialogVisible" width="400px">
             <el-form :model="editForm" label-width="80px">
             <el-form-item label="名称">
@@ -128,19 +138,19 @@
 </template>
 
 <script>
+// 引入所需的组件和库
 import { defineComponent } from 'vue'
 import {
   User,
   Notification,
   Document,
   Food,
-  Basketball,
-  Check,
-  Plus,
-  
+  Basketball
 } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import logoImg from '../logo/logo.png'
 
+// 定义Vue组件，使用defineComponent函数来创建一个新的Vue组件实例。
 export default defineComponent({
   components: {
     User,
@@ -149,8 +159,11 @@ export default defineComponent({
     Food,
     Basketball
   },
+  // 数据包括logoImg、管理员名称、训练项目列表、加载状态、表单数据和弹窗显示状态。
+  // 增加了表单数据和编辑弹窗相关的数据。
   data() {
     return {
+      logoImg,
       adminName: localStorage.getItem('admin_name'),
       trains: [],
       loading: false,
@@ -173,6 +186,8 @@ export default defineComponent({
     this.adminName = localStorage.getItem('admin_name')
     this.fetchTraining()
   },
+  // methods包括获取训练项目列表、添加训练项目、重置表单、删除训练项目、打开编辑弹窗、提交编辑和登出功能。
+  // 在获取训练项目列表时，使用了异步函数来处理API请求。
   methods: {
     async fetchTraining() {
         this.loading = true
@@ -304,7 +319,14 @@ export default defineComponent({
   margin: 0 auto;
 }
 
+.logo-img {
+  height: 40px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
 .logo {
+  display: flex;
+  align-items: center;
   font-size: 24px;
   font-weight: bold;
   color: #2c3e50;
@@ -336,7 +358,7 @@ export default defineComponent({
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
 }
 
-/* 食物列表卡片 */
+/* 训练列表卡片 */
 .train-list-card {
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
@@ -350,7 +372,6 @@ export default defineComponent({
   z-index: 999;
   height: calc(100vh - 60px);
   background: #fff;
-  /* 可选：加阴影或边框美化 */
 }
 
 </style>

@@ -1,17 +1,24 @@
 <template>
+  <!-- 页面设计，大体上分为三块：顶部导航栏、侧边栏和主要内容区域。 -->
   <div style="display: flex; flex-direction: column; height: 100vh;">
     <!-- 顶部导航栏 -->
+     <!-- 顶部导航栏包含网站logo、管理员信息和登出按钮。 -->
     <div class="header">
       <div class="header-content">
-        <span class="logo">FitSeek</span>
+        <span class="logo">
+          <img :src="logoImg" alt="logo" class="logo-img" />
+          FitSeek
+        </span>
         <div class="admin-info">管理员：{{ adminName }}</div>
         <el-button type="primary" plain @click="logout" style="margin-left: 16px; border: 2px solid #409EFF;">登出</el-button>
       </div>
     </div>
 
     <div style="display: flex; flex: 1;">
+      <!-- 外层stick用于固定侧边栏 -->
       <div class="sidebar-fixed">
       <!-- 侧边栏 -->
+      <!-- 侧边栏包含各个管理功能的链接。 -->
       <el-menu
         default-active="/announcement-management"
         class="el-menu-vertical"
@@ -50,6 +57,8 @@
       </div>
 
       <!-- 主要内容区域 -->
+      <!-- 主要内容区域包含公告列表和公告详情弹窗。 -->
+      <!-- 使用el-card组件来美化内容区域。 -->
       <div class="content-container">
 
         <!-- 公告列表 -->
@@ -92,6 +101,7 @@
 </template>
 
 <script>
+// 引入Vue和Element Plus相关组件
 import { defineComponent } from 'vue'
 import { marked } from 'marked'
 import {
@@ -99,13 +109,16 @@ import {
   Notification,
   Document,
   Food,
-  Basketball,
-  Search,
-  Check,
-  Plus
+  Basketball
 } from '@element-plus/icons-vue'
+// 引入Element Plus的消息提示和确认框组件
 import { ElMessageBox, ElMessage } from 'element-plus'
+// 引入公告管理相关的样式和logo图片
+import logoImg from '../../logo/logo.png'
 
+// 定义Vue组件，使用defineComponent函数来创建一个新的Vue组件实例。
+// 在组件中注册所需的图标组件，以便在模板中使用。
+// data包括logoImg、管理员名称、公告列表、加载状态、弹窗显示状态和当前选中的公告。
 export default defineComponent({
   components: {
     User,
@@ -116,6 +129,7 @@ export default defineComponent({
   },
   data() {
     return {
+      logoImg,
       adminName: localStorage.getItem('admin_name'),
       announcements: [],
       loading: false,
@@ -127,6 +141,8 @@ export default defineComponent({
     this.adminName = localStorage.getItem('admin_name')
     this.fetchAnnouncements()
   },
+  // 使用mounted钩子函数在组件加载时获取管理员名称和公告列表
+  // methods包括获取公告列表、删除公告、显示公告详情、处理弹窗关闭和渲染Markdown内容等功能。
   methods: {
     async fetchAnnouncements() {
       this.loading = true
@@ -219,7 +235,14 @@ export default defineComponent({
   margin: 0 auto;
 }
 
+.logo-img {
+  height: 40px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
 .logo {
+  display: flex;
+  align-items: center;
   font-size: 24px;
   font-weight: bold;
   color: #2c3e50;
@@ -284,6 +307,5 @@ export default defineComponent({
   z-index: 999;
   height: calc(100vh - 60px);
   background: #fff;
-  /* 可选：加阴影或边框美化 */
 }
 </style>

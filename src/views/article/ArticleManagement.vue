@@ -1,9 +1,14 @@
 <template>
+  <!-- 页面设计，大体上分为三块：顶部导航栏、侧边栏和主要内容区域。 -->
   <div style="display: flex; flex-direction: column; height: 100vh;">
     <!-- 顶部导航栏 -->
+    <!-- 顶部导航栏包含网站logo、管理员信息和登出按钮。 -->
     <div class="header">
       <div class="header-content">
-        <span class="logo">FitSeek</span>
+        <span class="logo">
+          <img :src="logoImg" alt="logo" class="logo-img" />
+          FitSeek
+        </span>
         <div class="admin-info">管理员：{{ adminName }}</div>
         <el-button type="primary" plain @click="logout" style="margin-left: 16px; border: 2px solid #409EFF;">登出</el-button>
       </div>
@@ -12,6 +17,7 @@
     <div style="display: flex; flex: 1;">
       <div class="sidebar-fixed">
       <!-- 侧边栏 -->
+      <!-- 侧边栏包含各个管理功能的链接。 -->
       <el-menu
         default-active="/article-management"
         class="el-menu-vertical"
@@ -50,6 +56,8 @@
       </div>
 
       <!-- 主要内容区域 -->
+      <!-- 主要内容区域包含文章列表和文章详情弹窗。 -->
+      <!-- 使用el-card组件来美化表单。 -->
       <div class="content-container">
 
         <!-- 公告列表 -->
@@ -92,6 +100,7 @@
 </template>
 
 <script>
+// 引入所需的组件和库
 import { defineComponent } from 'vue'
 import { marked } from 'marked'
 import {
@@ -99,12 +108,10 @@ import {
   Notification,
   Document,
   Food,
-  Basketball,
-  Search,
-  Check,
-  Plus
+  Basketball
 } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import logoImg from '../../logo/logo.png'
 
 export default defineComponent({
   components: {
@@ -114,8 +121,10 @@ export default defineComponent({
     Food,
     Basketball
   },
+  // 数据包括logoImg、管理员名称、文章列表、加载状态、弹窗显示状态和当前选中的文章。
   data() {
     return {
+      logoImg,
       adminName: localStorage.getItem('admin_name'),
       articles: [],
       loading: false,
@@ -127,6 +136,7 @@ export default defineComponent({
     this.adminName = localStorage.getItem('admin_name')
     this.fetchArticles()
   },
+  //methods包括获取文章列表、删除文章、显示文章详情、关闭弹窗、渲染Markdown内容和登出功能。
   methods: {
     async fetchArticles() {
       this.loading = true
@@ -219,7 +229,14 @@ export default defineComponent({
   margin: 0 auto;
 }
 
+.logo-img {
+  height: 40px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
 .logo {
+  display: flex;
+  align-items: center;
   font-size: 24px;
   font-weight: bold;
   color: #2c3e50;
@@ -284,6 +301,5 @@ export default defineComponent({
   z-index: 999;
   height: calc(100vh - 60px);
   background: #fff;
-  /* 可选：加阴影或边框美化 */
 }
 </style>
