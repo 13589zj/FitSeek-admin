@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex; flex-direction: column; height: 100vh;">
+  <div style="display: flex; flex-direction: column; height: 200vh;">
     <!-- 顶部导航栏 -->
     <div class="header">
       <div class="header-content">
@@ -35,6 +35,14 @@
         <el-menu-item index="/article-management">
           <el-icon><document /></el-icon>
           <span>文章管理</span>
+        </el-menu-item>
+        <el-menu-item index="/food-library">
+          <el-icon><food /></el-icon>
+          <span>食物库管理</span>
+        </el-menu-item>
+        <el-menu-item index="/train-library">
+          <el-icon><basketball /></el-icon>
+          <span>训练库管理</span>
         </el-menu-item>
       </el-menu>
 
@@ -78,6 +86,8 @@ import {
   User,
   Notification,
   Document,
+  Food,
+  Basketball,
   Search,
   Check,
   Plus
@@ -88,7 +98,9 @@ export default defineComponent({
   components: {
     User,
     Notification,
-    Document
+    Document,
+    Food,
+    Basketball
   },
   data() {
     return {
