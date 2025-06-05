@@ -5,6 +5,7 @@
       <div class="header-content">
         <span class="logo">FitSeek</span>
         <div class="admin-info">管理员：{{ adminName }}</div>
+        <el-button type="primary" plain @click="logout" style="margin-left: 16px; border: 2px solid #409EFF;">登出</el-button>
       </div>
     </div>
 
@@ -137,6 +138,11 @@ export default defineComponent({
         },
         resetForm() {
             this.$refs.formRef.resetFields()
+        },
+        logout() {
+            localStorage.removeItem('admin_token')
+            localStorage.removeItem('admin_name')
+            this.$router.push('/login')
         }
     }
 })
