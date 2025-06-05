@@ -1,16 +1,23 @@
 <template>
+  <!-- 页面设计，大体上分为三块：顶部导航栏、侧边栏和主要内容区域。 -->
   <div style="display: flex; flex-direction: column; height: 100vh;">
     <!-- 统一顶部导航栏 -->
+    <!-- 顶部导航栏包含网站logo、管理员信息和登出按钮。 -->
     <div class="header">
       <div class="header-content">
-        <span class="logo">FitSeek</span>
+        <span class="logo">
+          <img :src="logoImg" alt="logo" class="logo-img" />
+          FitSeek
+        </span>
         <div class="admin-info">管理员：{{ adminName }}</div>
         <el-button type="primary" plain @click="logout" style="margin-left: 16px; border: 2px solid #409EFF;">登出</el-button>
       </div>
     </div>
 
     <div style="display: flex; flex: 1;">
+      <div class="sidebar-fixed">
       <!-- 侧边栏（添加右边框） -->
+      <!-- 侧边栏包含各个管理功能的链接。 -->
       <el-menu
         default-active="/articles"
         class="el-menu-vertical"
@@ -46,8 +53,11 @@
           <span>训练库管理</span>
         </el-menu-item>
       </el-menu>
+      </div>
 
       <!-- 主要内容区域 -->
+      <!-- 主要内容区域包含文章编辑表单。 -->
+      <!-- 使用el-card组件来美化表单。 -->
       <div class="content-container">
         <el-card class="form-card">
           <h2 class="card-title">文章编辑</h2>
@@ -67,18 +77,8 @@
                 v-model="form.content" 
                 :rows="8"
                 placeholder="请输入文章内容..."
-                resize="none"
+  
               />
-            </el-form-item>
-
-            <el-form-item label="类型" prop="type">
-              <el-select 
-                v-model="form.type" 
-                style="width: 100%"
-                placeholder="请选择文章类型"
-              >
-                <el-option label="文章" value="article" />
-              </el-select>
             </el-form-item>
 
             <el-form-item class="form-actions">
@@ -94,18 +94,19 @@
 </template>
 
 <script>
+// 引入 Vue 相关依赖和 Element Plus 组件
 import { defineComponent } from 'vue'
 import {
   User,
   Notification,
   Document,
   Food,
-  Basketball,
-  Search,
-  Check,
-  Plus
+  Basketball
 } from '@element-plus/icons-vue'
+// 引入其他组件
+import logoImg from '../../logo/logo.png'
 
+// 定义 Vue 组件
 export default defineComponent({
   components: {
     User,
@@ -114,8 +115,10 @@ export default defineComponent({
     Food,
     Basketball
   },
+  // 数据包括 logoImg、管理员名称和表单数据
   data() {
     return {
+      logoImg,
       adminName: localStorage.getItem('admin_name'),
       form: {
         content: '',
@@ -125,6 +128,8 @@ export default defineComponent({
       }
     }
   },
+  // 定义组件的方法，包括提交表单、重置表单和登出功能
+  // 提交表单时，添加时间戳并调用 API 发布文章
   methods: {
     async submitForm() {
       this.form.time = new Date()
@@ -164,6 +169,7 @@ export default defineComponent({
 .header {
   background-color: #e8f5e9;
   height: 60px;
+  min-height: 60px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   position: sticky;
   top: 0;
@@ -180,7 +186,14 @@ export default defineComponent({
   margin: 0 auto;
 }
 
+.logo-img {
+  height: 40px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
 .logo {
+  display: flex;
+  align-items: center;
   font-size: 24px;
   font-weight: bold;
   color: #2c3e50;
@@ -240,5 +253,14 @@ export default defineComponent({
 /* 下拉选择样式 */
 .el-select {
   width: 100%;
+}
+
+.sidebar-fixed {
+  position: sticky;
+  top: 60px; /* 顶部导航栏高度 */
+  align-self: flex-start;
+  z-index: 999;
+  height: calc(100vh - 60px);
+  background: #fff;
 }
 </style>

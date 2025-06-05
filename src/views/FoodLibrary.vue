@@ -1,16 +1,23 @@
 <template>
+  <!-- 页面设计，大体上分为三块：顶部导航栏、侧边栏和主要内容区域。 -->
   <div style="display: flex; flex-direction: column; height: 200vh;">
     <!-- 顶部导航栏 -->
+    <!-- 顶部导航栏包含网站logo、管理员信息和登出按钮。 -->
     <div class="header">
       <div class="header-content">
-        <span class="logo">FitSeek</span>
+        <span class="logo">
+          <img :src="logoImg" alt="logo" class="logo-img" />
+          FitSeek
+        </span>
         <div class="admin-info">管理员：{{ adminName }}</div>
         <el-button type="primary" plain @click="logout" style="margin-left: 16px; border: 2px solid #409EFF;">登出</el-button>
       </div>
     </div>
 
     <div style="display: flex; flex: 1;">
+      <div class="sidebar-fixed">
       <!-- 侧边栏 -->
+      <!-- 侧边栏包含各个管理功能的链接。 -->
       <el-menu
         default-active="/food-library"
         class="el-menu-vertical"
@@ -46,8 +53,11 @@
           <span>训练库管理</span>
         </el-menu-item>
       </el-menu>
+      </div>
 
       <!-- 主要内容区域 -->
+      <!-- 主要内容区域包含食物库管理的新增表单和具备查改删功能的列表。 -->
+      <!-- 使用el-card组件来美化表单和列表。 -->
       <div class="content-container">
         <!-- 新增食物卡片 -->
         <el-card class="form-card">
@@ -85,6 +95,7 @@
         <el-card class="food-list-card">
             <h2 style="margin-bottom: 20px;">食物列表</h2>
             <el-table :data="foods" border style="width: 100%" v-loading="loading">
+                <el-table-column prop="food_id" label="食物ID" />
                 <el-table-column prop="name" label="名称" />
                 <el-table-column prop="calories" label="热量" />
                 <el-table-column prop="category" label="分类" />
@@ -103,6 +114,8 @@
         </el-card>
 
         <!-- 修改弹窗 -->
+        <!-- 使用el-dialog组件来实现修改食物信息的弹窗。 -->
+        <!-- 弹窗中包含一个表单，用户可以修改食物的热量、分类和备注。 -->
         <el-dialog title="修改食物信息" v-model="editDialogVisible" width="400px">
             <el-form :model="editForm" label-width="80px">
             <el-form-item label="名称">
@@ -140,19 +153,20 @@
 </template>
 
 <script>
+// 引入所需的组件和库
+// 使用Vue 3的defineComponent来定义组件
 import { defineComponent } from 'vue'
 import {
   User,
   Notification,
   Document,
   Food,
-  Basketball,
-  Check,
-  Plus,
-  
+  Basketball
 } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import logoImg from '../logo/logo.png'
 
+// 定义Vue组件，使用defineComponent函数来创建一个新的Vue组件实例。
 export default defineComponent({
   components: {
     User,
@@ -161,12 +175,16 @@ export default defineComponent({
     Food,
     Basketball
   },
+  // 数据包括logoImg、管理员名称、食物列表、加载状态、表单数据和弹窗状态。
+  // form用于新增食物，editForm用于修改食物信息。
   data() {
     return {
+      logoImg,
       adminName: localStorage.getItem('admin_name'),
       foods: [],
       loading: false,
       form: { // 增加表单数据
+        food_id: '',
         name: '',
         calories: '',
         category: '',
@@ -186,6 +204,8 @@ export default defineComponent({
     this.adminName = localStorage.getItem('admin_name')
     this.fetchFood()
   },
+  // methods包括获取食物列表、添加食物、重置表单、删除食物、打开编辑弹窗、提交编辑和登出功能。
+  // 使用async/await来处理异步操作，确保代码的可读性和错误处理。
   methods: {
     async fetchFood() {
         this.loading = true
@@ -301,6 +321,7 @@ export default defineComponent({
 .header {
   background-color: #e8f5e9;
   height: 60px;
+  min-height: 60px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   position: sticky;
   top: 0;
@@ -317,7 +338,14 @@ export default defineComponent({
   margin: 0 auto;
 }
 
+.logo-img {
+  height: 40px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
 .logo {
+  display: flex;
+  align-items: center;
   font-size: 24px;
   font-weight: bold;
   color: #2c3e50;
@@ -354,6 +382,15 @@ export default defineComponent({
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
   margin-bottom: 24px;
+}
+
+.sidebar-fixed {
+  position: sticky;
+  top: 60px; /* 顶部导航栏高度 */
+  align-self: flex-start;
+  z-index: 999;
+  height: calc(100vh - 60px);
+  background: #fff;
 }
 
 </style>
