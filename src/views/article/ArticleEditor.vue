@@ -36,6 +36,14 @@
           <el-icon><document /></el-icon>
           <span>文章管理</span>
         </el-menu-item>
+        <el-menu-item index="/food-library">
+          <el-icon><food /></el-icon>
+          <span>食物库管理</span>
+        </el-menu-item>
+        <el-menu-item index="/train-library">
+          <el-icon><basketball /></el-icon>
+          <span>训练库管理</span>
+        </el-menu-item>
       </el-menu>
 
       <!-- 主要内容区域 -->
@@ -90,6 +98,8 @@ import {
   User,
   Notification,
   Document,
+  Food,
+  Basketball,
   Search,
   Check,
   Plus
@@ -99,7 +109,9 @@ export default defineComponent({
   components: {
     User,
     Notification,
-    Document
+    Document,
+    Food,
+    Basketball
   },
   data() {
     return {
