@@ -10,6 +10,7 @@
     </div>
 
     <div style="display: flex; flex: 1;">
+      <div class="sidebar-fixed">
       <!-- 侧边栏（添加右边框） -->
       <el-menu
         default-active="/articles"
@@ -46,6 +47,7 @@
           <span>训练库管理</span>
         </el-menu-item>
       </el-menu>
+      </div>
 
       <!-- 主要内容区域 -->
       <div class="content-container">
@@ -67,18 +69,8 @@
                 v-model="form.content" 
                 :rows="8"
                 placeholder="请输入文章内容..."
-                resize="none"
+  
               />
-            </el-form-item>
-
-            <el-form-item label="类型" prop="type">
-              <el-select 
-                v-model="form.type" 
-                style="width: 100%"
-                placeholder="请选择文章类型"
-              >
-                <el-option label="文章" value="article" />
-              </el-select>
             </el-form-item>
 
             <el-form-item class="form-actions">
@@ -164,6 +156,7 @@ export default defineComponent({
 .header {
   background-color: #e8f5e9;
   height: 60px;
+  min-height: 60px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   position: sticky;
   top: 0;
@@ -240,5 +233,15 @@ export default defineComponent({
 /* 下拉选择样式 */
 .el-select {
   width: 100%;
+}
+
+.sidebar-fixed {
+  position: sticky;
+  top: 60px; /* 顶部导航栏高度 */
+  align-self: flex-start;
+  z-index: 999;
+  height: calc(100vh - 60px);
+  background: #fff;
+  /* 可选：加阴影或边框美化 */
 }
 </style>

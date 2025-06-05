@@ -10,6 +10,7 @@
     </div>
 
     <div style="display: flex; flex: 1;">
+      <div class="sidebar-fixed">
       <!-- 侧边栏 -->
       <el-menu
         default-active="/train-library"
@@ -46,6 +47,7 @@
           <span>训练库管理</span>
         </el-menu-item>
       </el-menu>
+      </div>
 
       <!-- 主要内容区域 -->
       <div class="content-container">
@@ -78,6 +80,7 @@
         <el-card class="train-list-card">
             <h2 style="margin-bottom: 20px;">训练项目列表</h2>
             <el-table :data="trains" border style="width: 100%" v-loading="loading">
+                <el-table-column prop="train_id" label="训练ID" />
                 <el-table-column prop="name" label="名称" />
                 <el-table-column prop="category" label="分类" />
                 <el-table-column prop="note" label="备注" />
@@ -152,6 +155,7 @@ export default defineComponent({
       trains: [],
       loading: false,
       form: { // 增加表单数据
+        train_id: '',
         name: '',
         category: '',
         note: ''
@@ -283,6 +287,7 @@ export default defineComponent({
 .header {
   background-color: #e8f5e9;
   height: 60px;
+  min-height: 60px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   position: sticky;
   top: 0;
@@ -336,6 +341,16 @@ export default defineComponent({
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
   margin-bottom: 24px;
+}
+
+.sidebar-fixed {
+  position: sticky;
+  top: 60px; /* 顶部导航栏高度 */
+  align-self: flex-start;
+  z-index: 999;
+  height: calc(100vh - 60px);
+  background: #fff;
+  /* 可选：加阴影或边框美化 */
 }
 
 </style>

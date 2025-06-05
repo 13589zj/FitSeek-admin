@@ -10,6 +10,7 @@
     </div>
 
     <div style="display: flex; flex: 1;">
+      <div class="sidebar-fixed">
       <!-- 侧边栏 -->
       <el-menu
         default-active="/users"
@@ -46,6 +47,7 @@
           <span>训练库管理</span>
         </el-menu-item>
       </el-menu>
+      </div>
 
       <!-- 主要内容区域 -->
       <div class="content-container">
@@ -56,6 +58,46 @@
             <span class="card-title">用户数量</span>
             <span class="card-value">{{ users.length }}</span>
           </div> -->
+          <el-row :gutter="16" class="stats-row">
+            <!-- 左侧两列：两行两列小卡片 -->
+            <el-col :span="12">
+              <el-row :gutter="16">
+                <el-col :span="12">
+                  <el-card class="mini-stat-card">
+                    <div class="mini-stat-title">用户总数</div>
+                    <div class="mini-stat-value">{{ userCount }}</div>
+                  </el-card>
+                </el-col>
+                <el-col :span="12">
+                  <el-card class="mini-stat-card">
+                    <div class="mini-stat-title">管理员数量</div>
+                    <div class="mini-stat-value">{{ adminCount }}</div>
+                  </el-card>
+                </el-col>
+              </el-row>
+              <el-row :gutter="16" style="margin-top: 16px;">
+                <el-col :span="12">
+                  <el-card class="mini-stat-card">
+                    <div class="mini-stat-title">本周新增</div>
+                    <div class="mini-stat-value">{{ recentWeekCount }}</div>
+                  </el-card>
+                </el-col>
+                <el-col :span="12">
+                  <el-card class="mini-stat-card">
+                    <div class="mini-stat-title">活跃用户数量</div>
+                    <div class="mini-stat-value">--</div>
+                  </el-card>
+                </el-col>
+              </el-row>
+            </el-col>
+            <!-- 可继续添加更多小卡片 -->
+            <el-col :span="9">
+              <el-card class="mini-stat-card" style="height: 80%;">
+                <div class="mini-stat-title">近期注册用户</div>
+                <div ref="userChart" class="user-chart-container"></div>
+              </el-card>
+            </el-col>
+          </el-row>
         </el-card>
 
         <!-- 用户列表 -->
@@ -94,6 +136,7 @@ import {
   Plus
 } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import * as echarts from 'echarts'
 
 export default defineComponent({
   components: {
@@ -107,7 +150,20 @@ export default defineComponent({
     return {
       adminName: localStorage.getItem('admin_name'),
       users: [],
-      loading: false
+      loading: false,
+      recentWeekCount: 0,
+      recentUserStats: [],
+      userCount: 0,
+      adminCount: 0
+    }
+  },
+  watch: {
+    users: {
+      immediate: true,
+      handler(val) {
+        this.userCount = val.filter(u => u.type === 'user').length
+        this.adminCount = val.filter(u => u.type === 'admin').length
+      }
     }
   },
   mounted() {
@@ -122,6 +178,7 @@ export default defineComponent({
         const res = await api.default.get('/admin/user/get')
         if (res.data.success) {
           this.users = res.data.users
+          this.calcRecentStats()
         } else {
           throw new Error(res.data.message || '加载用户失败')
         }
@@ -168,6 +225,47 @@ export default defineComponent({
       localStorage.removeItem('admin_token')
       localStorage.removeItem('admin_name')
       this.$router.push('/login')
+    },
+    calcRecentStats() {
+      // 统计最近7天注册用户数
+      const now = new Date()
+      const days = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(now)
+        d.setDate(now.getDate() - (6 - i))
+        return d.toISOString().slice(0, 10)
+      })
+      const stats = days.map(day =>
+        this.users.filter(u => (u.created_at || '').slice(0, 10) === day && u.type === 'user' ).length
+      )
+      this.recentUserStats = stats
+      this.recentWeekCount = stats.reduce((a, b) => a + b, 0)
+      this.$nextTick(this.renderUserChart)
+    },
+    renderUserChart() {
+      if (!this.$refs.userChart) return
+      const chart = echarts.init(this.$refs.userChart)
+      chart.setOption({
+        tooltip: {},
+        xAxis: {
+          type: 'category',
+          data: Array.from({ length: 7 }, (_, i) => {
+            const d = new Date()
+            d.setDate(d.getDate() - (6 - i))
+            return `${d.getMonth() + 1}/${d.getDate()}`
+          })
+        },
+        yAxis: { 
+          type: 'value',
+          min:'dataMin',
+          max:'dataMax'
+        },
+        series: [{
+          data: this.recentUserStats,
+          type: 'bar',
+          barWidth: '60%',
+          itemStyle: { color: '#409EFF' }
+        }]
+      })
     }
   }
 })
@@ -178,6 +276,7 @@ export default defineComponent({
 .header {
   background-color: #e8f5e9;
   height: 60px;
+  min-height: 60px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   position: sticky;
   top: 0;
@@ -225,6 +324,7 @@ export default defineComponent({
   border-radius: 8px;
   border: 1px solid #ebeef5;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+  padding-left: 20px;
 }
 
 .card-content {
@@ -250,5 +350,41 @@ export default defineComponent({
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
   margin-bottom: 24px;
+  padding-left: 20px;
+}
+
+.sidebar-fixed {
+  position: sticky;
+  top: 60px; /* 顶部导航栏高度 */
+  align-self: flex-start;
+  z-index: 999;
+  height: calc(100vh - 60px);
+  background: #fff;
+  /* 可选：加阴影或边框美化 */
+}
+
+.stats-row {
+  margin-bottom: 12px;
+}
+.mini-stat-card {
+  text-align: center;
+  padding: 12px 0;
+  min-height: 80px;
+}
+.mini-stat-title {
+  font-size: 14px;
+  color: #909399;
+  margin-bottom: 4px;
+}
+.mini-stat-value {
+  font-size: 22px;
+  font-weight: bold;
+  color: #409EFF;
+}
+
+.user-chart-container {
+  width: 100%;
+  flex:1;
+  height: 193px;
 }
 </style>

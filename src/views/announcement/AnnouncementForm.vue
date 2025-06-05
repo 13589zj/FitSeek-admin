@@ -10,6 +10,7 @@
     </div>
 
     <div style="display: flex; flex: 1;">
+      <div class="sidebar-fixed">
       <!-- 侧边栏 -->
       <el-menu
         default-active="/announcements"
@@ -46,6 +47,7 @@
           <span>训练库管理</span>
         </el-menu-item>
       </el-menu>
+      </div>
 
       <!-- 主要内容区域 -->
       <div class="content-container">
@@ -228,5 +230,16 @@ export default defineComponent({
 /* 下拉选择样式 */
 .el-select :deep(.el-input__inner) {
   height: 40px;
+}
+
+.sidebar-fixed {
+  position: sticky;
+  top: 60px; /* 顶部导航栏高度 */
+  min-height: 60px;
+  align-self: flex-start;
+  z-index: 999;
+  height: calc(100vh - 60px);
+  background: #fff;
+  /* 可选：加阴影或边框美化 */
 }
 </style>
