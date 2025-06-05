@@ -52,19 +52,36 @@
         <!-- 公告列表 -->
         <el-card class="user-list-card">
           <h2 style="margin-bottom: 20px;">公告列表</h2>
-          <el-table :data="announcements" border style="width: 100%" v-loading="loading">
+          <el-table :data="announcements" border style="width: 100%" v-loading="loading" @row-click="showAnnouncementDetail">
             <el-table-column prop="ann_id" label="公告ID" />
             <el-table-column prop="publisher_name" label="发布者" />
-            <el-table-column prop="content" label="内容" />
+            <el-table-column prop="content" label="内容">
+              <template #default="scope">
+                {{ scope.row.content.split('\n')[0] }}
+              </template>
+            </el-table-column>
             <el-table-column prop="publish_time" label="发布时间" />
             <el-table-column label="操作" width="100">
               <template #default="scope">
-                <el-button @click="deleteAnnouncement(scope.row)" type="danger">删除</el-button>
+                <el-button @click.stop="deleteAnnouncement(scope.row)" type="danger">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-card>
-
+        <el-dialog
+          v-model="dialogVisible"
+          title="公告详情"
+          width="60vw"
+          @close="handleDialogClose"
+        >
+          <div v-if="currentAnnouncement">
+            <p><strong>公告ID：</strong>{{ currentAnnouncement.ann_id }}</p>
+            <p><strong>发布者：</strong>{{ currentAnnouncement.publisher_name }}</p>
+            <p><strong>发布时间：</strong>{{ currentAnnouncement.publish_time }}</p>
+            <p><strong>内容：</strong></p>
+            <div v-html="renderMarkdown(currentAnnouncement.content)"></div>
+          </div>
+        </el-dialog>
         <router-view />
       </div>
     </div>
@@ -73,6 +90,7 @@
 
 <script>
 import { defineComponent } from 'vue'
+import { marked } from 'marked'
 import {
   User,
   Notification,
@@ -93,7 +111,9 @@ export default defineComponent({
     return {
       adminName: localStorage.getItem('admin_name'),
       announcements: [],
-      loading: false
+      loading: false,
+      dialogVisible: false,      // 控制弹窗显示
+      currentAnnouncement: null    // 当前选中的公告
     }
   },
   mounted() {
@@ -149,6 +169,17 @@ export default defineComponent({
           ElMessage.error('网络错误，请稍后再试')
         }
       }
+    },
+    showAnnouncementDetail(row) {
+      this.currentAnnouncement = row
+      this.dialogVisible = true
+    },
+    handleDialogClose() {
+      this.dialogVisible = false
+      this.currentAnnouncement = null
+    },
+    renderMarkdown(content) {
+      return marked.parse(content || '')
     }
   }
 })
@@ -188,6 +219,8 @@ export default defineComponent({
 
 .el-menu-vertical {
   width: 200px;
+  min-width: 200px;
+  max-width: 200px;
   border-right: 1px solid #e6e6e6;
   background: #ffffff;
 }

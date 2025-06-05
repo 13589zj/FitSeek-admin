@@ -189,6 +189,8 @@ export default defineComponent({
 
 .el-menu-vertical {
   width: 200px;
+  min-width: 200px;
+  max-width: 200px;
   border-right: 1px solid #e6e6e6;
   background: #ffffff;
 }

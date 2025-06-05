@@ -68,8 +68,6 @@
                 placeholder="请选择公告类型"
               >
                 <el-option label="公告" value="announcement" />
-                <el-option label="活动公告" value="event" />
-                <el-option label="维护公告" value="maintenance" />
               </el-select>
             </el-form-item>
 
@@ -176,6 +174,8 @@ export default defineComponent({
 
 .el-menu-vertical {
   width: 200px;
+  min-width: 200px;
+  max-width: 200px;
   border-right: 1px solid #e6e6e6;
   background: #ffffff;
 }

@@ -52,19 +52,36 @@
         <!-- 公告列表 -->
         <el-card class="user-list-card">
           <h2 style="margin-bottom: 20px;">文章列表</h2>
-          <el-table :data="articles" border style="width: 100%" v-loading="loading">
+          <el-table :data="articles" border style="width: 100%" v-loading="loading" @row-click="showArticleDetail">
             <el-table-column prop="art_id" label="文章ID" />
             <el-table-column prop="publisher_name" label="发布者" />
-            <el-table-column prop="content" label="内容" />
+            <el-table-column prop="content" label="内容">
+              <template #default="scope">
+                {{ scope.row.content.split('\n')[0] }}
+              </template>
+            </el-table-column>
             <el-table-column prop="publish_time" label="发布时间" />
             <el-table-column label="操作" width="100">
               <template #default="scope">
-                <el-button @click="deleteArticle(scope.row)" type="danger">删除</el-button>
+                <el-button @click.stop="deleteArticle(scope.row)" type="danger">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-card>
-
+        <el-dialog
+          v-model="dialogVisible"
+          title="文章详情"
+          width="60vw"
+          @close="handleDialogClose"
+        >
+          <div v-if="currentArticle">
+            <p><strong>文章ID：</strong>{{ currentArticle.art_id }}</p>
+            <p><strong>发布者：</strong>{{ currentArticle.publisher_name }}</p>
+            <p><strong>发布时间：</strong>{{ currentArticle.publish_time }}</p>
+            <p><strong>内容：</strong></p>
+            <div v-html="renderMarkdown(currentArticle.content)"></div>
+          </div>
+        </el-dialog>
         <router-view />
       </div>
     </div>
@@ -73,6 +90,7 @@
 
 <script>
 import { defineComponent } from 'vue'
+import { marked } from 'marked'
 import {
   User,
   Notification,
@@ -93,7 +111,9 @@ export default defineComponent({
     return {
       adminName: localStorage.getItem('admin_name'),
       articles: [],
-      loading: false
+      loading: false,
+      dialogVisible: false,      // 控制弹窗显示
+      currentArticle: null,      // 当前查看的文章
     }
   },
   mounted() {
@@ -149,6 +169,17 @@ export default defineComponent({
           ElMessage.error('网络错误，请稍后再试')
         }
       }
+    },
+    showArticleDetail(row) {
+      this.currentArticle = row
+      this.dialogVisible = true
+    },
+    handleDialogClose() {
+      this.dialogVisible = false
+      this.currentArticle = null
+    },
+    renderMarkdown(content) {
+      return marked.parse(content || '')
     }
   }
 })
@@ -188,6 +219,8 @@ export default defineComponent({
 
 .el-menu-vertical {
   width: 200px;
+  min-width: 200px;
+  max-width: 200px;
   border-right: 1px solid #e6e6e6;
   background: #ffffff;
 }
