@@ -69,8 +69,6 @@
                 placeholder="请选择文章类型"
               >
                 <el-option label="文章" value="article" />
-                <el-option label="新闻动态" value="news" />
-                <el-option label="使用指南" value="guide" />
               </el-select>
             </el-form-item>
 
@@ -177,6 +175,8 @@ export default defineComponent({
 
 .el-menu-vertical {
   width: 200px;
+  min-width: 200px;
+  max-width: 200px;
   border-right: 1px solid #e6e6e6;
   background: #ffffff;
 }
